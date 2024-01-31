@@ -18,6 +18,6 @@ jobs:
           app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
         tag_name: v0.9
         body_path: |
-          ${{ github.workspace }}-app/build/outputs/apk/androidTest/debug/release.txt
+          app/build/outputs/apk/androidTest/debug/release.txt
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
