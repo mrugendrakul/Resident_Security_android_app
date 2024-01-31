@@ -1,0 +1,23 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+        tag_name: v0.9
+        body_text: |
+          ${{ github.workspace }}-app/build/outputs/apk/androidTest/debug/release.txt
+      env:
+        GITHUB_TOKEN: ${{ secrtes.GITHUB_TOKEN}}
