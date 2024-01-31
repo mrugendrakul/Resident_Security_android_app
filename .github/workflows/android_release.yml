@@ -40,22 +40,11 @@ jobs:
         distribution: 'adopt'
         java-version: '20'
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
+    - name: Create Release and upload
+      uses: ncipollo/release-action@v1.13.0
       with:
-        tag_name: v0.9
-        release_name: Testing
+        actifacts: "/app/build/outputs/apk/release/app-release-unsigned.apk"
         body: |
-          Changes in this release:
-          - Add your release notes here
-        draft: false
-        prerelease: false
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v2
-      with:
-        name: app-release
-        path: app/build/outputs/apk/release/app-release-unsigned.apk
+          Uploading initial release
         
     
