@@ -48,6 +48,6 @@ jobs:
         artifacts: "/app/build/outputs/apk/release/app-release-unsigned.apk"
         body: |
           Uploading initial release
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}
         
     
