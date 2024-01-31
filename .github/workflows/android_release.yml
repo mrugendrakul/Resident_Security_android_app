@@ -28,22 +28,22 @@ jobs:
 
   release:
     # needs: build
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
     
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+    # steps:
+    # - name: Checkout Repository
+    #   uses: actions/checkout@v2
 
-    - name: Set up JDK
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'adopt'
-        java-version: '20'
+    # - name: Set up JDK
+    #   uses: actions/setup-java@v2
+    #   with:
+    #     distribution: 'adopt'
+    #     java-version: '20'
 
-    - name: Create Release and upload
-      uses: ncipollo/release-action@v1.13.0
-      with:
-        tag: 0.9
+    # - name: Create Release and upload
+    #   uses: ncipollo/release-action@v1.13.0
+    #   with:
+    #     tag: 0.9
         # title: Release v0.9
         artifacts: "app/build/outputs/apk/release/app-release-unsigned.apk"
         body: |
