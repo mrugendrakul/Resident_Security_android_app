@@ -43,11 +43,11 @@ jobs:
     - name: Create Release and upload
       uses: ncipollo/release-action@v1.13.0
       with:
-        token: ${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}
         tag: 0.9
         # title: Release v0.9
-        artifact: "/app/build/outputs/apk/release/app-release-unsigned.apk"
+        artifacts: "/app/build/outputs/apk/release/app-release-unsigned.apk"
         body: |
           Uploading initial release
+        token: ${{ secrets.GITHUB_TOKEN }}
         
     
