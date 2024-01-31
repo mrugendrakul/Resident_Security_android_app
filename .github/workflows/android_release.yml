@@ -7,17 +7,55 @@ on:
     branches: [ "main" ]
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Create Release
-      uses: softprops/action-gh-release@v0.1.15
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
       with:
-        files: |
-          app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
-        tag_name: v0.9
-        body_path: |
-          app/build/outputs/apk/androidTest/debug/release.txt
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+        distribution: 'adopt'
+        java-version: '11'
+        
+    - name: Make Gradlew Executable
+      run: chmod +x ./gradlew
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '11'
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        body: |
+          Changes in this release:
+          - Add your release notes here
+        draft: false
+        prerelease: false
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: app-release
+        path: app/build/outputs/apk/release/app-release.apk
+        
+    
