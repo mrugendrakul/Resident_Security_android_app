@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Intruder Alert</string>
+    <string name="FcmToken">Current FCM Token:</string>
+    <string name="database_Sync">Send to Database</string>
+    <string name="name_for_storing_token">Name for storing token</string>
+    <string name="token_exist">Token exist in the database</string>
+    <string name="token_already_exist">Token Already exist in database with different name</string>
+    <string name="name_cannot_be_null">Name cannot be null</string>
+</resources>
