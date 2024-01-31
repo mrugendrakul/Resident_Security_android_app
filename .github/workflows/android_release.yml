@@ -7,27 +7,27 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  # build:
+  #   runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+  #   steps:
+  #   - name: Checkout Repository
+  #     uses: actions/checkout@v2
 
-    - name: Set up JDK
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'adopt'
-        java-version: '11'
+  #   - name: Set up JDK
+  #     uses: actions/setup-java@v2
+  #     with:
+  #       distribution: 'adopt'
+  #       java-version: '20'
         
-    - name: Make Gradlew Executable
-      run: chmod +x ./gradlew
+  #   - name: Make Gradlew Executable
+  #     run: chmod +x ./gradlew
 
-    - name: Build with Gradle
-      run: ./gradlew build
+  #   - name: Build with Gradle
+  #     run: ./gradlew build
 
   release:
-    needs: build
+    # needs: build
     runs-on: ubuntu-latest
     
     steps:
@@ -38,14 +38,14 @@ jobs:
       uses: actions/setup-java@v2
       with:
         distribution: 'adopt'
-        java-version: '11'
+        java-version: '20'
 
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: v${{ github.run_number }}
-        release_name: Release v${{ github.run_number }}
+        tag_name: v0.9
+        release_name: Testing
         body: |
           Changes in this release:
           - Add your release notes here
@@ -56,6 +56,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: app-release
-        path: app/build/outputs/apk/release/app-release.apk
+        path: app/build/outputs/apk/release/app-release-unsigned.apk
         
     
