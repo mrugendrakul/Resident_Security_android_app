@@ -45,7 +45,7 @@ jobs:
       with:
         tag: 0.9
         # title: Release v0.9
-        artifacts: "/app/build/outputs/apk/release/app-release-unsigned.apk"
+        artifacts: "app/build/outputs/apk/release/app-release-unsigned.apk"
         body: |
           Uploading initial release
         token: ${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}
