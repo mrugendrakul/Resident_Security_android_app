@@ -55,20 +55,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
-//    private val receiver = object : BroadcastReceiver() {
-//        override fun onReceive(context: Context?, intent: Intent?) {
-//            val title = intent?.getStringExtra("notificationTitle")
-//            val body = intent?.getStringExtra("notificationBody")
-//
-//            // Update your UI components with the notification details
-//            // For example, update a TextView with the title and body
-//            val notificationService =  MyFirebaseMessagingService()
-//
-//            notificationService.showNotification(title,body)
-//        }
-//    }
-
 }
 
 @Preview
