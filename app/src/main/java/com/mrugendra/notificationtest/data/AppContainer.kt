@@ -10,11 +10,11 @@ interface AppContainer {
 }
 
 class DefaultAppContainer : AppContainer{
-//    private val db = com.google.firebase.Firebase.firestore
-//    private val residentCollection = db.collection("residents")
+    private val db = com.google.firebase.Firebase.firestore
+    private val residentCollection = db.collection("residents")
 
 //    override val apiService:FirebaseAPI = NetworkFirebaseAPI(db, residentCollection)
-    override val apiService:FirebaseAPI = NetworkFirebaseAPI()
+    override val apiService:FirebaseAPI = NetworkFirebaseAPI(db, residentCollection = residentCollection)
 
 
     override val tokenRepository: TokenRepository = NetworkTokenRepository(apiService)
