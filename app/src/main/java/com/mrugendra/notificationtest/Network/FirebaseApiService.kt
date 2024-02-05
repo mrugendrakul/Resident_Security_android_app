@@ -28,8 +28,7 @@ class NetworkFirebaseAPI(
     val db : FirebaseFirestore,
     val residentCollection : CollectionReference
 ):FirebaseAPI{
-//    private val db = com.google.firebase.Firebase.firestore
-//    private val residentCollection = db.collection("residents")
+
     override suspend fun getFCMToken():String {
         return withContext(Dispatchers.IO) {
             return@withContext suspendCoroutine<String> {
