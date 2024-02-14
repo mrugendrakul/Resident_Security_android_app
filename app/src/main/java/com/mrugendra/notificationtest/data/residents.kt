@@ -1,6 +1,7 @@
 package com.mrugendra.notificationtest.data
 
-data class resident(
+data class residents(
     val name:String,
-    val token:String
+    val id:String,
+    val info:String
 )

@@ -20,7 +20,7 @@ import com.mrugendra.notificationtest.Network.FirebaseAPI
 import com.mrugendra.notificationtest.Network.NetworkFirebaseAPI
 import com.mrugendra.notificationtest.data.NetworkTokenRepository
 import com.mrugendra.notificationtest.data.TokenRepository
-import com.mrugendra.notificationtest.data.resident
+import com.mrugendra.notificationtest.data.residents
 import com.mrugendra.notificationtest.data.uiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

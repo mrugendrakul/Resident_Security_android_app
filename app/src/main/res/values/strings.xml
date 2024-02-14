@@ -6,4 +6,9 @@
     <string name="token_exist">Token exist in the database</string>
     <string name="token_already_exist">Token Already exist in database with different name</string>
     <string name="name_cannot_be_null">Name cannot be null</string>
+    <string name="Identified">Identified</string>
+    <string name="Unidentified">Unidentified</string>
+    <string name="Residents">Residents</string>
+    <string name="TokenRegs">TokenRegistration</string>
+    <string name="back_button">back button</string>
 </resources>
