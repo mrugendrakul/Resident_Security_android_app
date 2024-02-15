@@ -141,7 +141,7 @@ fun MainSceen(
                     Identified("xyz","Mrugendra", LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
                     Identified("xyz","Mrugendra", LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
                     Identified("xyz","Mrugendra", LocalDateTime.of(2024, Month.JANUARY,30,22,12))
-                ))
+                ),{})
             }
             composable(AppScreen.Unidentified.name){
                 UnidentifiedList(unidentifes = listOf(
@@ -187,6 +187,7 @@ fun IntruderAppBar(
             IconButton(onClick = navigateUp){
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     contentDescription = stringResource(id = R.string.back_button))
             }
         }

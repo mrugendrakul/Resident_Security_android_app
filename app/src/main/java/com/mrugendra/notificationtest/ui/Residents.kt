@@ -25,7 +25,7 @@ import java.time.format.DateTimeFormatter
 fun ResidentList(
     residents:List<residents>
 ){
-    LazyColumn(modifier = Modifier){
+    LazyColumn(modifier = Modifier.padding(horizontal = 10.dp)){
         items(residents){resident->
             Resident(resident)
         }

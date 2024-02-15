@@ -31,7 +31,7 @@ import java.time.format.DateTimeFormatter
 fun UnidentifiedList(
     unidentifes:List<Unidentified>
 ){
-    LazyColumn(modifier = Modifier){
+    LazyColumn(modifier = Modifier.padding(horizontal = 10.dp)){
         items(unidentifes){unknown->
             Unkown(unknown)
         }

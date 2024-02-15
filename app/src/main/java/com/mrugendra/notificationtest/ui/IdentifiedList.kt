@@ -1,5 +1,6 @@
 package com.mrugendra.notificationtest.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,24 +23,27 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun IdentifiedList(
-    identified:List<Identified>
+    identified:List<Identified>,
+    button:()->Unit
 ){
-    LazyColumn(modifier = Modifier){
+    LazyColumn(modifier = Modifier.padding(horizontal = 10.dp)){
         items(identified){identify->
-            Person(identify)
+            Person(identify,button)
         }
     }
 }
 
 @Composable
 fun Person(
-    identifiy:Identified
+    identifiy:Identified,
+    button:()->Unit
 ){
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
-            .padding(5.dp),
+            .padding(5.dp)
+            .clickable { button },
 //        border = BorderStroke(5.dp,MaterialTheme.colorScheme.primary)
 
     ){
@@ -63,7 +67,8 @@ fun Person(
 @Preview
 @Composable
 fun PreviewPerson(){
-    Person(Identified(id="xyz",name="Mrugendra", time=LocalDateTime.of(2024, Month.JANUARY,30,22,12)))
+    Person(Identified(id="xyz",name="Mrugendra", time=LocalDateTime.of(2024, Month.JANUARY,30,22,12))
+        ,{})
 }
 
 @Preview
@@ -75,7 +80,7 @@ fun PreviewPeopleList(){
             Identified("xyz","Mrugendra",LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
             Identified("xyz","Mrugendra",LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
             Identified("xyz","Mrugendra",LocalDateTime.of(2024, Month.JANUARY,30,22,12))
-            )
+            ),{}
         )
     }
 }
