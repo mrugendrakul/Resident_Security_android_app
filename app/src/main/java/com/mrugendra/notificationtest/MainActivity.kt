@@ -1,5 +1,6 @@
 package com.mrugendra.notificationtest
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -7,7 +8,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,18 +25,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.mrugendra.notificationtest.data.Identified
 import com.mrugendra.notificationtest.data.Unidentified
-import com.mrugendra.notificationtest.data.residents
 import com.mrugendra.notificationtest.data.uiState
-import com.mrugendra.notificationtest.ui.Notfi
 import com.mrugendra.notificationtest.ui.IdentifiedList
+import com.mrugendra.notificationtest.ui.Notfi
+import com.mrugendra.notificationtest.ui.PersonDetail
 import com.mrugendra.notificationtest.ui.ResidentList
+import com.mrugendra.notificationtest.ui.ResidentStatus
 import com.mrugendra.notificationtest.ui.StartHere
 import com.mrugendra.notificationtest.ui.TokenRegistration
 import com.mrugendra.notificationtest.ui.UnidentifiedList
@@ -47,17 +49,21 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyApplicationTheme {
+            MyApplicationTheme(
+                dynamicColor = false
+            ) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val viewModel:Notfi=viewModel(factory = Notfi.Factory)
+                    val viewModel: Notfi = viewModel(factory = Notfi.Factory)
                     MainSceen(
                         nofUiState = viewModel.notUiState.collectAsState().value,
                         updateName = { viewModel.updateName(it) },
-                        updateToken = { viewModel.updateToken() })
+                        updateToken = { viewModel.updateToken() },
+                        updateResidentList = {viewModel.UpdateResidentsList()},
+                        getTheList = {viewModel.UpdateResidentsList()})
                 }
             }
         }
@@ -68,101 +74,149 @@ class MainActivity : ComponentActivity() {
 
 @Preview
 @Composable
-fun MyMainScreenPreview(){
-//    MyApp()
-    MyApplicationTheme()
+fun MyMainScreenPreview() {
+
+    MyApplicationTheme(
+        dynamicColor = false
+    )
     {
         MainSceen(
             nofUiState = uiState(),
             updateName = {},
-            updateToken = {}
+            updateToken = {},
+            updateResidentList = {},
+            getTheList = {}
         )
     }
 }
 
-enum class AppScreen(@StringRes val title:Int){
+enum class AppScreen(@StringRes val title: Int) {
     Start(title = R.string.app_name),
     Identified(title = R.string.Identified),
     Unidentified(title = R.string.Unidentified),
     Residents(title = R.string.Residents),
     TokenRegistration(title = R.string.TokenRegs),
+    PersonDetail(
+        title = R.string.detailed_information
+    )
 }
 
 
+@SuppressLint("ResourceType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainSceen(
-    nofUiState:uiState,
-    updateName:(String)->Unit,
-    updateToken:()->Unit,
-    navController:NavHostController = rememberNavController(),
-
-){
+    nofUiState: uiState,
+    updateName: (String) -> Unit,
+    updateToken: () -> Unit,
+    navController: NavHostController = rememberNavController(),
+    updateResidentList:()->Unit,
+    getTheList:()->Unit
+    ) {
+//    Log.d("check_res_with", colorResource(id = 0x1060060).toString())
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = AppScreen.valueOf(
-        backStackEntry?.destination?.route?:AppScreen.Start.name
+        backStackEntry?.destination?.route ?: AppScreen.Start.name
     )
     Scaffold(
         topBar = {
             IntruderAppBar(
                 currentScreen = currentScreen,
-                canNavigateBack = navController.previousBackStackEntry!=null,
+                canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() }
 
             )
         },
 
-    ) {
-        innerPadding ->
+        ) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = AppScreen.Start.name,
             modifier = Modifier.padding(innerPadding)
-        ){
-            composable(AppScreen.Start.name){
+        ) {
+            composable(AppScreen.Start.name) {
                 StartHere(nofUiState = nofUiState,
                     navigateToIdentified = {
                         navController.navigate(AppScreen.Identified.name)
                     },
                     navigateToUnidentified = {
-                         navController.navigate(AppScreen.Unidentified.name)
+                        navController.navigate(AppScreen.Unidentified.name)
                     },
                     navigateToResidents = {
+                        updateResidentList()
                         navController.navigate(AppScreen.Residents.name)
                     },
                     navigateToToken = {
                         navController.navigate(AppScreen.TokenRegistration.name)
                     }
+                )
+            }
+            composable(AppScreen.Identified.name) {
+                IdentifiedList(
+                    listOf(
+                        Identified(
+                            "xyz",
+                            "Mrugendra",
+                            LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
+                        ),
+                        Identified(
+                            "xyz",
+                            "Mrugendra",
+                            LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
+                        ),
+                        Identified(
+                            "xyz",
+                            "Mrugendra",
+                            LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
+                        ),
+                        Identified(
+                            "xyz",
+                            "Mrugendra",
+                            LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
+                        )
                     )
+                ) {
+                    navController.navigate(AppScreen.PersonDetail.name)
+                }
             }
-            composable(AppScreen.Identified.name){
-                IdentifiedList(listOf(
-                    Identified("xyz","Mrugendra", LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
-                    Identified("xyz","Mrugendra", LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
-                    Identified("xyz","Mrugendra", LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
-                    Identified("xyz","Mrugendra", LocalDateTime.of(2024, Month.JANUARY,30,22,12))
-                ),{})
-            }
-            composable(AppScreen.Unidentified.name){
+            composable(AppScreen.Unidentified.name) {
                 UnidentifiedList(unidentifes = listOf(
-                    Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time=LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
-                    Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time=LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
-                    Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time=LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
-                    Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time=LocalDateTime.of(2024, Month.JANUARY,30,22,12))
-                ))
+                    Unidentified(
+                        image = "https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",
+                        time = LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
+                    ),
+                    Unidentified(
+                        image = "https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",
+                        time = LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
+                    ),
+                    Unidentified(
+                        image = "https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",
+                        time = LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
+                    ),
+                    Unidentified(
+                        image = "https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",
+                        time = LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
+                    )
+                ), {})
             }
-            composable(AppScreen.Residents.name){
-                ResidentList(residents = listOf(
-                    residents("Mrugendra","123uuidxzyabc","Will get there"),
-                    residents("Mrugendra","123uuidxzyabc","Will get there"),
-                    residents("Mrugendra","123uuidxzyabc","Will get there")
-                ))
+            composable(AppScreen.Residents.name) {
+                ResidentList(
+                    residents = nofUiState.residentStatus,
+                    getTheList = getTheList,
+                    pressed = {
+                        navController.navigate(AppScreen.PersonDetail.name)
+                    }
+                )
             }
-            composable(AppScreen.TokenRegistration.name){
+            composable(AppScreen.TokenRegistration.name) {
                 TokenRegistration(
                     nofUiState = nofUiState,
                     updateToken = updateToken,
-                    updateName = updateName)
+                    updateName = updateName
+                )
+            }
+            composable(AppScreen.PersonDetail.name) {
+                PersonDetail()
             }
         }
 
@@ -173,25 +227,30 @@ fun MainSceen(
 @Composable
 fun IntruderAppBar(
     currentScreen: AppScreen,
-    canNavigateBack:Boolean,
-    navigateUp:()->Unit = {},
-    modifier:Modifier = Modifier
-){
-    TopAppBar(title = { Text (stringResource(id = currentScreen.title),
-    color = MaterialTheme.colorScheme.onPrimary)},
-    colors = topAppBarColors(
-        containerColor = MaterialTheme.colorScheme.primary
+    canNavigateBack: Boolean,
+    navigateUp: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(title = {
+        Text(
+            stringResource(id = currentScreen.title),
+            color = MaterialTheme.colorScheme.onPrimary
+        )
+    },
+        colors = topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary
         ),
-    navigationIcon = {
-        if (canNavigateBack) {
-            IconButton(onClick = navigateUp){
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    contentDescription = stringResource(id = R.string.back_button))
+        navigationIcon = {
+            if (canNavigateBack) {
+                IconButton(onClick = navigateUp) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        contentDescription = stringResource(id = R.string.back_button)
+                    )
+                }
             }
         }
-    }
     )
 }
 

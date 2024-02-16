@@ -29,7 +29,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            versionNameSuffix = "0.9.6"
         }
     }
     compileOptions {

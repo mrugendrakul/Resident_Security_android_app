@@ -67,17 +67,17 @@ fun TokenRegistration(
             singleLine = true,
             onValueChange = {updateName(it)},
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Send
+                imeAction = ImeAction.Done
             ),
-            keyboardActions = KeyboardActions(
-                onSend = {updateToken()}
-            ),
+//            keyboardActions = KeyboardActions(
+//                onSend = {updateToken()}
+//            ),
             isError = nofUiState.exist or nofUiState.nullName
 
         )
         Button(onClick = {updateToken() },
             enabled = !nofUiState.exist and !nofUiState.successSend,
-            shape = MaterialTheme.shapes.medium) {
+            shape = MaterialTheme.shapes.small) {
             Log.d(TAG,"Exist inside ui button : ${nofUiState.exist}")
             Text(text = stringResource(R.string.database_Sync))
         }
@@ -93,7 +93,9 @@ fun TokenRegistration(
 @Preview
 @Composable
 fun MyAppPreview(){
-    MyApplicationTheme()
+    MyApplicationTheme(
+        dynamicColor = false
+    )
     { TokenRegistration(
         nofUiState = uiState(),
         updateToken = {},

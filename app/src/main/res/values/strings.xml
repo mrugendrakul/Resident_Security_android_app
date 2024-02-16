@@ -11,5 +11,8 @@
     <string name="Residents">Residents</string>
     <string name="TokenRegs">TokenRegistration</string>
     <string name="back_button">back button</string>
-    <string name="information" >This application is build under GD6 group</string>
+    <string name="detailed_information">Detailed Information</string>
+    <string name="loading">Loading the data</string>
+    <string name="error">Error getting the List</string>
+    <!--    <string name="information" >This application is build under GD6 group</string>-->
 </resources>

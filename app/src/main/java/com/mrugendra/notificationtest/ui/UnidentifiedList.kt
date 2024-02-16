@@ -1,5 +1,6 @@
 package com.mrugendra.notificationtest.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -29,24 +31,27 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun UnidentifiedList(
-    unidentifes:List<Unidentified>
+    unidentifes:List<Unidentified>,
+    pressed: () -> Unit
 ){
     LazyColumn(modifier = Modifier.padding(horizontal = 10.dp)){
         items(unidentifes){unknown->
-            Unkown(unknown)
+            Unkown(unknown,pressed)
         }
     }
 }
 
 @Composable
 fun Unkown(
-    unknown:Unidentified
+    unknown:Unidentified,
+    pressed:()->Unit
 ){
     Card(
         modifier = Modifier
             .fillMaxWidth()
 //            .height(120.dp)
-            .padding(5.dp),
+            .padding(5.dp)
+            .clickable { pressed },
 //        border = BorderStroke(5.dp,MaterialTheme.colorScheme.primary)
 
     ){
@@ -78,19 +83,22 @@ fun Unkown(
 @Preview
 @Composable
 fun PreviewUnkown(){
-    Unkown(Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time=LocalDateTime.of(2024, Month.JANUARY,30,22,12)))
+    Unkown(Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time=LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
+        {})
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 fun PreviewUnidentifiedList(){
-    MyApplicationTheme {
+    MyApplicationTheme(
+        dynamicColor = false
+    ) {
         UnidentifiedList(unidentifes = listOf(
             Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time=LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
             Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time=LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
             Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time=LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
             Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time=LocalDateTime.of(2024, Month.JANUARY,30,22,12))
-            )
+            ),{}
         )
     }
 }

@@ -43,7 +43,7 @@ fun Person(
             .fillMaxWidth()
             .height(120.dp)
             .padding(5.dp)
-            .clickable { button },
+            .clickable (onClick = button )  ,
 //        border = BorderStroke(5.dp,MaterialTheme.colorScheme.primary)
 
     ){
