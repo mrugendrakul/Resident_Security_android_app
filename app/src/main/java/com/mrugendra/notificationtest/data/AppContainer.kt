@@ -5,17 +5,17 @@ import com.mrugendra.notificationtest.Network.FirebaseAPI
 import com.mrugendra.notificationtest.Network.NetworkFirebaseAPI
 
 interface AppContainer {
-    val tokenRepository : TokenRepository
+    val dataRepository : DataRepository
     val apiService:FirebaseAPI
 }
 
 class DefaultAppContainer : AppContainer{
     private val db = com.google.firebase.Firebase.firestore
-    private val residentCollection = db.collection("residents")
+    private val tokenCollection = db.collection("residents")
+    private val residentCollection = db.collection("KnownPeople")
 
 //    override val apiService:FirebaseAPI = NetworkFirebaseAPI(db, residentCollection)
-    override val apiService:FirebaseAPI = NetworkFirebaseAPI(db, residentCollection = residentCollection)
+    override val apiService:FirebaseAPI = NetworkFirebaseAPI(db, tokenCollection = tokenCollection,residentCollection = residentCollection)
 
-
-    override val tokenRepository: TokenRepository = NetworkTokenRepository(apiService)
+    override val dataRepository: DataRepository = NetworkDataRepository(apiService)
 }
