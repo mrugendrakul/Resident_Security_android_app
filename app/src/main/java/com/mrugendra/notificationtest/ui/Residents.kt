@@ -84,7 +84,11 @@ fun ResidentListLoading(
 //        painter = painterResource(id = R.drawable.loading_img),
 //        contentDescription = stringResource(R.string.loading)
 //    )
-    Box(modifier = modifier){
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 10.dp)
+    ){
         Column(modifier) {
             ResidentLoading()
             ResidentLoading()

@@ -2,6 +2,7 @@ package com.mrugendra.notificationtest.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,6 +52,7 @@ fun StartHere(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(15.dp)
+            .background(color = MaterialTheme.colorScheme.background)
 //            .height(345.dp)
             ,
         verticalArrangement = Arrangement.Center,

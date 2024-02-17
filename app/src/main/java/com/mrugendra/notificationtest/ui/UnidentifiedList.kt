@@ -19,6 +19,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
@@ -30,7 +34,7 @@ import java.time.Month
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun UnidentifiedList(
+fun UnidentifiedListStart(
     unidentifes:List<Unidentified>,
     pressed: () -> Unit
 ){
@@ -39,6 +43,16 @@ fun UnidentifiedList(
             Unkown(unknown,pressed)
         }
     }
+}
+
+@Composable
+fun UnidentifiedList(
+    unidentifes: List<Unidentified>,
+    pressed: () -> Unit,
+){
+    UnidentifiedListStart(unidentifes = unidentifes, pressed = pressed)
+
+
 }
 
 @Composable

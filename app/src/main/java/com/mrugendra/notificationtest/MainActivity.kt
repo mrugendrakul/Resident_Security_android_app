@@ -37,6 +37,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mrugendra.notificationtest.data.Identified
 import com.mrugendra.notificationtest.data.Unidentified
 import com.mrugendra.notificationtest.data.uiState
+import com.mrugendra.notificationtest.ui.AppMainScreen
 import com.mrugendra.notificationtest.ui.IdentifiedList
 import com.mrugendra.notificationtest.ui.Notfi
 import com.mrugendra.notificationtest.ui.PersonDetail
@@ -108,18 +109,6 @@ fun MyMainScreenPreview() {
     }
 }
 
-enum class AppScreen(@StringRes val title: Int) {
-    Start(title = R.string.app_name),
-    Identified(title = R.string.Identified),
-    Unidentified(title = R.string.Unidentified),
-    Residents(title = R.string.Residents),
-    TokenRegistration(title = R.string.TokenRegs),
-    PersonDetail(
-        title = R.string.detailed_information
-    )
-}
-
-
 @SuppressLint("ResourceType")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -127,157 +116,19 @@ fun MainSceen(
     nofUiState: uiState,
     updateName: (String) -> Unit,
     updateToken: () -> Unit,
-    navController: NavHostController = rememberNavController(),
     updateResidentList:()->Unit,
     forceUpdateResidentList:(Boolean)->Unit,
     getTheList:()->Unit,
     residentRefreshState:PullRefreshState
     ) {
 //    Log.d("check_res_with", colorResource(id = 0x1060060).toString())
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = AppScreen.valueOf(
-        backStackEntry?.destination?.route ?: AppScreen.Start.name
-    )
-    Scaffold(
-        topBar = {
-            IntruderAppBar(
-                currentScreen = currentScreen,
-                canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() }
-
-            )
-        },
-
-        ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = AppScreen.Start.name,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(AppScreen.Start.name) {
-                StartHere(nofUiState = nofUiState,
-                    navigateToIdentified = {
-                        navController.navigate(AppScreen.Identified.name)
-                    },
-                    navigateToUnidentified = {
-                        navController.navigate(AppScreen.Unidentified.name)
-                    },
-                    navigateToResidents = {
-                        updateResidentList()
-                        navController.navigate(AppScreen.Residents.name)
-                    },
-                    navigateToToken = {
-                        navController.navigate(AppScreen.TokenRegistration.name)
-                    }
-                )
-            }
-            composable(AppScreen.Identified.name) {
-                IdentifiedList(
-                    listOf(
-                        Identified(
-                            "xyz",
-                            "Mrugendra",
-                            LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                        ),
-                        Identified(
-                            "xyz",
-                            "Mrugendra",
-                            LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                        ),
-                        Identified(
-                            "xyz",
-                            "Mrugendra",
-                            LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                        ),
-                        Identified(
-                            "xyz",
-                            "Mrugendra",
-                            LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                        )
-                    )
-                ) {
-                    navController.navigate(AppScreen.PersonDetail.name)
-                }
-            }
-            composable(AppScreen.Unidentified.name) {
-                UnidentifiedList(unidentifes = listOf(
-                    Unidentified(
-                        image = "https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",
-                        time = LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                    ),
-                    Unidentified(
-                        image = "https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",
-                        time = LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                    ),
-                    Unidentified(
-                        image = "https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",
-                        time = LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                    ),
-                    Unidentified(
-                        image = "https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",
-                        time = LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                    )
-                ), {})
-            }
-            composable(AppScreen.Residents.name) {
-                ResidentList(
-                    nofUiState = nofUiState,
-                    residents = nofUiState.residentStatus,
-                    getTheList = getTheList,
-                    pressed = {
-                        navController.navigate(AppScreen.PersonDetail.name)
-                    },
-                    refreshState = residentRefreshState,
-                    refreshButton = { forceUpdateResidentList(true) }
-                )
-            }
-            composable(AppScreen.TokenRegistration.name) {
-                TokenRegistration(
-                    nofUiState = nofUiState,
-                    updateToken = updateToken,
-                    updateName = updateName
-                )
-            }
-            composable(AppScreen.PersonDetail.name) {
-                PersonDetail()
-            }
-        }
-
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun IntruderAppBar(
-    currentScreen: AppScreen,
-    canNavigateBack: Boolean,
-    navigateUp: () -> Unit = {},
-    modifier: Modifier = Modifier
-) {
-    TopAppBar(title = {
-        Text(
-            stringResource(id = currentScreen.title),
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-    },
-        colors = topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary
-        ),
-        navigationIcon = {
-            if (canNavigateBack) {
-                IconButton(onClick = navigateUp) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        contentDescription = stringResource(id = R.string.back_button)
-                    )
-                }
-            }
-        }
+    AppMainScreen(
+        nofUiState = nofUiState,
+        updateName = updateName,
+        updateToken = updateToken,
+        forceUpdateResidentList = forceUpdateResidentList,
+        getTheList = getTheList,
+        residentRefreshState = residentRefreshState ,
+        updateResidentList = updateResidentList
     )
 }
-
-
-
-
-
