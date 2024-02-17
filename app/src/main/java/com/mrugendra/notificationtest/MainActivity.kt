@@ -77,7 +77,8 @@ class MainActivity : ComponentActivity() {
                             onRefresh = {
                                 Log.d(TAG,"Refresh stared with pull")
                                 viewModel.UpdateResidentsList(true)
-                            })
+                            }),
+                        getResident = {viewModel.UpdateCurrentResidentAndIdentifiedId(it)}
                     )
 
                 }
@@ -104,7 +105,8 @@ fun MyMainScreenPreview() {
             updateResidentList = {},
             forceUpdateResidentList = {},
             getTheList = {},
-            residentRefreshState = rememberPullRefreshState(refreshing = false, onRefresh = { /*TODO*/ })
+            residentRefreshState = rememberPullRefreshState(refreshing = false, onRefresh = { /*TODO*/ }),
+            getResident = {}
         )
     }
 }
@@ -119,7 +121,8 @@ fun MainSceen(
     updateResidentList:()->Unit,
     forceUpdateResidentList:(Boolean)->Unit,
     getTheList:()->Unit,
-    residentRefreshState:PullRefreshState
+    residentRefreshState:PullRefreshState,
+    getResident:(String)->Unit
     ) {
 //    Log.d("check_res_with", colorResource(id = 0x1060060).toString())
     AppMainScreen(
@@ -129,6 +132,7 @@ fun MainSceen(
         forceUpdateResidentList = forceUpdateResidentList,
         getTheList = getTheList,
         residentRefreshState = residentRefreshState ,
-        updateResidentList = updateResidentList
+        updateResidentList = updateResidentList,
+        getResident = getResident
     )
 }

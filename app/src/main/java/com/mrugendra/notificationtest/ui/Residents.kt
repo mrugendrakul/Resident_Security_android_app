@@ -44,7 +44,7 @@ val TAG = "MyFirebaseMessagingService"
 fun ResidentList(
     nofUiState: uiState,
     residents: ResidentStatus,
-    pressed: () -> Unit,
+    pressed: (String) -> Unit,
     modifier: Modifier = Modifier,
     getTheList: () -> Unit,
     refreshState: PullRefreshState,
@@ -142,7 +142,7 @@ fun ResidentListError(
 fun ResidentListSuccess(
     nofUiState: uiState,
     residents: List<residents>,
-    pressed: () -> Unit,
+    pressed: (String) -> Unit,
     modifier: Modifier = Modifier,
     refreshState: PullRefreshState,
     refreshButton: (Boolean) -> Unit
@@ -229,14 +229,14 @@ fun ResidentLoading(
 @Composable
 fun Resident(
     resident: residents,
-    pressed: () -> Unit
+    pressed: (String) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
             .padding(5.dp)
-            .clickable { pressed },
+            .clickable(onClick = { pressed(resident.id) }),
 //        border = BorderStroke(5.dp,MaterialTheme.colorScheme.primary)
 
     ) {

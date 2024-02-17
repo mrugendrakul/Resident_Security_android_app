@@ -140,5 +140,27 @@ class Notfi(
         }
     }
 
+    fun UpdateCurrentResidentAndIdentifiedId(
+        ID:String,
+        dataBase:ResidentStatus = _uiState.value.residentStatus
+    )
+    {
+        when(dataBase){
+            is ResidentStatus.Success -> {
+                val data = dataBase.residents
+                val retData:residents? = data.find { it.id == ID }
+                _uiState.update { current->current.copy(
+                    currentResident = retData?:residents("Does not found","does not exits","Please don't look here","")
+                ) }
+            }
+            else ->{
+                _uiState.update { current->current.copy(
+                    currentResident = residents("Does not found","does not exits","Please don't look here","")
+                ) }
+            }
+        }
+
+    }
+
 
 }

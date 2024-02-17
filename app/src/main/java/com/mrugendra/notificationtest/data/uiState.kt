@@ -14,6 +14,6 @@ data class uiState @OptIn(ExperimentalMaterialApi::class) constructor(
     val successSend:Boolean = false,
     val nullName:Boolean = false,
     val residentStatus: ResidentStatus = ResidentStatus.Loading,
-    val currentResidentId:String = "",
+    val currentResident:residents = residents("","","",""),
     val residentRefreshIsLoading: Boolean = false
 )

@@ -62,7 +62,8 @@ fun AppMainScreen(
     updateResidentList: () -> Unit,
     forceUpdateResidentList: (Boolean) -> Unit,
     getTheList: () -> Unit,
-    residentRefreshState: PullRefreshState
+    residentRefreshState: PullRefreshState,
+    getResident:(String)->Unit
 ) {
 //    Log.d("check_res_with", colorResource(id = 0x1060060).toString())
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -176,6 +177,7 @@ fun AppMainScreen(
                     residents = nofUiState.residentStatus,
                     getTheList = getTheList,
                     pressed = {
+                        getResident(it)
                         navController.navigate(AppScreen.PersonDetail.name)
                     },
                     refreshState = residentRefreshState,
@@ -189,8 +191,14 @@ fun AppMainScreen(
                     updateName = updateName
                 )
             }
-            composable(AppScreen.PersonDetail.name) {
-                PersonDetail()
+            composable(
+                route = AppScreen.PersonDetail.name ,
+                enterTransition = { slideInHorizontally(initialOffsetX = {it}, animationSpec = tween(durationMillis = 300))  /*+ fadeIn()*/ },
+                exitTransition = { slideOutHorizontally(targetOffsetX = {it}, animationSpec = tween(durationMillis = 300)) /*+ fadeOut()*/ }
+            ) {
+                PersonDetail(
+                    residents = nofUiState.currentResident
+                )
             }
         }
 
