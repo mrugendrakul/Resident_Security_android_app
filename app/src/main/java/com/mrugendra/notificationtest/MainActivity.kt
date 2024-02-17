@@ -2,13 +2,17 @@ package com.mrugendra.notificationtest
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,7 +41,6 @@ import com.mrugendra.notificationtest.ui.IdentifiedList
 import com.mrugendra.notificationtest.ui.Notfi
 import com.mrugendra.notificationtest.ui.PersonDetail
 import com.mrugendra.notificationtest.ui.ResidentList
-import com.mrugendra.notificationtest.ui.ResidentStatus
 import com.mrugendra.notificationtest.ui.StartHere
 import com.mrugendra.notificationtest.ui.TokenRegistration
 import com.mrugendra.notificationtest.ui.UnidentifiedList
@@ -45,7 +48,9 @@ import com.mrugendra.notificationtest.ui.theme.MyApplicationTheme
 import java.time.LocalDateTime
 import java.time.Month
 
+val TAG = "MyFirebaseMessagingService"
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterialApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -58,12 +63,22 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val viewModel: Notfi = viewModel(factory = Notfi.Factory)
+                    val nofUiState = viewModel.notUiState.collectAsState().value
                     MainSceen(
-                        nofUiState = viewModel.notUiState.collectAsState().value,
+                        nofUiState = nofUiState,
                         updateName = { viewModel.updateName(it) },
                         updateToken = { viewModel.updateToken() },
                         updateResidentList = {viewModel.UpdateResidentsList()},
-                        getTheList = {viewModel.UpdateResidentsList()})
+                        forceUpdateResidentList = {viewModel.UpdateResidentsList(it)},
+                        getTheList = {viewModel.UpdateResidentsList()},
+                        residentRefreshState = rememberPullRefreshState(
+                            refreshing = nofUiState.residentRefreshIsLoading,
+                            onRefresh = {
+                                Log.d(TAG,"Refresh stared with pull")
+                                viewModel.UpdateResidentsList(true)
+                            })
+                    )
+
                 }
             }
         }
@@ -72,6 +87,7 @@ class MainActivity : ComponentActivity() {
 }
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Preview
 @Composable
 fun MyMainScreenPreview() {
@@ -85,7 +101,9 @@ fun MyMainScreenPreview() {
             updateName = {},
             updateToken = {},
             updateResidentList = {},
-            getTheList = {}
+            forceUpdateResidentList = {},
+            getTheList = {},
+            residentRefreshState = rememberPullRefreshState(refreshing = false, onRefresh = { /*TODO*/ })
         )
     }
 }
@@ -103,7 +121,7 @@ enum class AppScreen(@StringRes val title: Int) {
 
 
 @SuppressLint("ResourceType")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun MainSceen(
     nofUiState: uiState,
@@ -111,7 +129,9 @@ fun MainSceen(
     updateToken: () -> Unit,
     navController: NavHostController = rememberNavController(),
     updateResidentList:()->Unit,
-    getTheList:()->Unit
+    forceUpdateResidentList:(Boolean)->Unit,
+    getTheList:()->Unit,
+    residentRefreshState:PullRefreshState
     ) {
 //    Log.d("check_res_with", colorResource(id = 0x1060060).toString())
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -201,11 +221,14 @@ fun MainSceen(
             }
             composable(AppScreen.Residents.name) {
                 ResidentList(
+                    nofUiState = nofUiState,
                     residents = nofUiState.residentStatus,
                     getTheList = getTheList,
                     pressed = {
                         navController.navigate(AppScreen.PersonDetail.name)
-                    }
+                    },
+                    refreshState = residentRefreshState,
+                    refreshButton = { forceUpdateResidentList(true) }
                 )
             }
             composable(AppScreen.TokenRegistration.name) {

@@ -1,6 +1,7 @@
 package com.mrugendra.notificationtest.ui
 
 import android.util.Log
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -13,6 +14,7 @@ import com.mrugendra.notificationtest.data.DataRepository
 import com.mrugendra.notificationtest.data.residents
 import com.mrugendra.notificationtest.data.uiState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +26,7 @@ sealed interface ResidentStatus{
     object Error:ResidentStatus
     object Loading:ResidentStatus
 }
-
+@OptIn(ExperimentalMaterialApi::class)
 class Notfi(
     private val dataRepository: DataRepository
 ): ViewModel(){
@@ -108,14 +110,22 @@ class Notfi(
         }
     }
 
-    fun UpdateResidentsList(){
-        if(_uiState.value.residentStatus == ResidentStatus.Error || _uiState.value.residentStatus == ResidentStatus.Loading ){
+    fun UpdateResidentsList(
+        isForced:Boolean = false
+    ){
+        if(_uiState.value.residentStatus == ResidentStatus.Error || _uiState.value.residentStatus == ResidentStatus.Loading || isForced){
             viewModelScope.launch() {
+                _uiState.update { current->current.copy(
+                    residentRefreshIsLoading = true,
+                    residentStatus = ResidentStatus.Loading
+                ) }
+                delay(1000)
                 try {
                     val residentsList = dataRepository.getResidents()
                     Log.d(TAG, "called the update")
                     _uiState.update { current ->
                         current.copy(
+                            residentRefreshIsLoading = false,
                             residentStatus = ResidentStatus.Success(
                                 residentsList
                             )
@@ -129,5 +139,6 @@ class Notfi(
             }
         }
     }
+
 
 }
