@@ -18,12 +18,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +44,7 @@ import com.mrugendra.notificationtest.R
 import com.mrugendra.notificationtest.data.uiState
 import com.mrugendra.notificationtest.ui.theme.MyApplicationTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartHere(
     nofUiState: uiState,
@@ -47,45 +53,81 @@ fun StartHere(
     navigateToResidents:()->Unit,
     navigateToToken:()->Unit){
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(15.dp)
-            .background(color = MaterialTheme.colorScheme.background)
+    Scaffold(
+//        topBar = {
+//            TopAppBar(
+//                title = { Text(text = "Click here to navigate to other location") }
+//            )
+//        }
+    ){
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+//                .weight(1f)
+
+                .background(color = MaterialTheme.colorScheme.background)
 //            .height(345.dp)
             ,
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        Row {
-            SpcButton(
-                text = "Identified",
-                icon = R.drawable.ic_launcher_foreground,
-                navigateToIdentified
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Text(
+                text = "Welcome to our application",
+                fontSize = 30.sp,
+                textAlign = TextAlign.Center,
+                lineHeight = 30.sp,
+                modifier = Modifier
+                    .padding(16.dp)
             )
-            Spacer(Modifier.width(15.dp))
-            SpcButton(
-                text = "Unidentified",
-                icon = R.drawable.ic_launcher_foreground,
-                navigateToUnidentified
-            )
-        }
-        Spacer(Modifier.height(15.dp))
-        Row {
-            SpcButton(
-                text = "Residents",
-                icon = R.drawable.ic_launcher_foreground,
-                navigateToResidents
-            )
-            Spacer(Modifier.width(15.dp))
-            SpcButton(
-                text = "Token Registration",
-                icon = R.drawable.ic_launcher_foreground,
-                navigateToToken
-            )
+            Spacer(Modifier.width(35.dp))
+            ElevatedCard(
+                modifier = Modifier
+                    .padding(25.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 12.dp
+                )
+            ) {
+                Text(
+                    text = stringResource(R.string.project_title),
+                    fontSize = 25.sp,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 25.sp,
+                    modifier = Modifier
+                        .padding(16.dp)
+                )
+            }
+//            Row {
+//                SpcButton(
+//                    text = "Identified",
+//                    icon = R.drawable.ic_connection_error,
+//                    navigateToIdentified
+//                )
+//                Spacer(Modifier.width(15.dp))
+//                SpcButton(
+//                    text = "Unidentified",
+//                    icon = R.drawable.ic_connection_error,
+//                    navigateToUnidentified
+//                )
+//            }
+//            Spacer(Modifier.height(15.dp))
+//            Row {
+//                SpcButton(
+//                    text = "Residents",
+//                    icon = R.drawable.ic_connection_error,
+//                    navigateToResidents
+//                )
+//                Spacer(Modifier.width(15.dp))
+////                SpcButton(
+////                    text = "Token Registration",
+////                    icon = R.drawable.ic_connection_error,
+////                    navigateToToken
+////                )
+//            }
         }
     }
+//        Spacer(modifier = Modifier.weight(1f))
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,16 +170,20 @@ fun SpcButton(
 @Preview
 @Composable
 fun PreviewStartHere(){
-    MyApplicationTheme()
+    MyApplicationTheme(
+        dynamicColor = false
+    )
     { StartHere(nofUiState = uiState(),{},{},{},{}) }
 }
 
 @Preview
 @Composable
 fun PreviewSpcButton(){
-    MyApplicationTheme()
+    MyApplicationTheme(
+        dynamicColor = false
+    )
     { SpcButton("Sample Text",
-        R.drawable.ic_launcher_foreground,
+        R.drawable.ic_connection_error,
         onPress = {})
          }
 }

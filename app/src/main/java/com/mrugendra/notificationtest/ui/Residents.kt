@@ -164,6 +164,8 @@ fun ResidentListSuccess(
                 .padding(horizontal = 10.dp)
                 .pullRefresh(refreshState)
                 .fillMaxSize()
+            ,
+//            reverseLayout = true
         ) {
             items(residents) { resident ->
                 Resident(resident, pressed)
@@ -177,9 +179,11 @@ fun ResidentListSuccess(
         backgroundColor = if (nofUiState.residentRefreshIsLoading) {
                                  MaterialTheme.colorScheme.inversePrimary
                             }
-                         else{
-                             MaterialTheme.colorScheme.inverseOnSurface
-                            }
+                         else {
+            MaterialTheme.colorScheme.inverseOnSurface
+        },
+        contentColor = MaterialTheme.colorScheme.onBackground
+
         )
 
     }

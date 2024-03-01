@@ -15,7 +15,7 @@ import com.mrugendra.notificationtest.R
 
 class MyFirebaseMessagingService:FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
-//        super.onMessageReceived(message)
+        super.onMessageReceived(message)
 //        val TAG = "firebaseMsgService"
         Log.d(TAG, "From: ${message.from}")
 
@@ -51,7 +51,7 @@ class MyFirebaseMessagingService:FirebaseMessagingService() {
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle(title)
             .setContentText(body)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentIntent(pendingIntent)
             .setStyle(NotificationCompat.BigTextStyle()
                 .bigText(

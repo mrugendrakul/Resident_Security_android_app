@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mrugendra.notificationtest.MyApplication
-import com.mrugendra.notificationtest.Network.FirebaseAPI
 import com.mrugendra.notificationtest.data.DataRepository
 import com.mrugendra.notificationtest.data.residents
 import com.mrugendra.notificationtest.data.uiState
@@ -37,6 +36,11 @@ class Notfi(
     var notUiState :StateFlow<uiState> = _uiState.asStateFlow()
 
     private fun getFCMToken() {
+        _uiState.update { it.copy(
+            isLoginAvailable = false,
+            startScreen = AppScreen.Loading,
+            isLoading = true
+        ) }
         Log.d(TAG,"Inside teh getfcmtoken")
         viewModelScope.launch{
             try{
@@ -48,7 +52,25 @@ class Notfi(
                 Log.d(TAG,"Exception to get the token")
                 _uiState.update { current ->current.copy(token = "Unable to get fetch the token") }
             }
+            val exists = try {
+                !dataRepository.getAlreadyExist(notUiState.value.token)
+            } catch (e: Exception) {
+                false
+            }
 
+            if(exists){
+                _uiState.update { it.copy(
+                    isLoginAvailable = true,
+                    startScreen = AppScreen.Start,
+                    isLoading = false
+                ) }
+            }else{
+                _uiState.update { it.copy(
+                    isLoginAvailable = false,
+                    startScreen = AppScreen.LoginPage,
+                    isLoading = false
+                ) }
+            }
         }
 
     }
@@ -66,33 +88,67 @@ class Notfi(
     }
 
     fun updateToken(){
-        if(_uiState.value.name==""){
-            _uiState.update { current->current.copy(nullName = true) }
+        if(_uiState.value.username==""){
+            _uiState.update { current->current.copy(
+                nullName = true
+            ) }
         }
         else {
-            _uiState.update { current->current.copy(nullName = false) }
+            _uiState.update {
+                current->current.copy(
+                    nullName = false,
+                    isLoading = true,
+                    successSend = true,
+                    exist = true
+                ) }
             viewModelScope.launch(Dispatchers.IO) {
                 val exists = try {
-                    !dataRepository.getAlreadyExist(notUiState.value.token)
+                    dataRepository.checkCredentials(_uiState.value.username,_uiState.value.password)
                 } catch (e: Exception) {
-                    _uiState.update { current -> current.copy(successSend = false) }
+                    _uiState.update { current -> current.copy(
+                        successSend = false,
+                        isLoading = false
+                    ) }
                     false
                 }
                 Log.d(TAG, "Exits $exists")
-                _uiState.update { current -> current.copy(exist = exists) }
+//                _uiState.update { current -> current.copy(
+//                    exist = exists,
+//                    isLoading = false
+//                ) }
 
-                if (exists == false) {
+                if (exists == true) {
                     val send: Boolean = try {
                         dataRepository.updateDatabaseToken(
                             token = notUiState.value.token,
-                            name = notUiState.value.name
+                            username = notUiState.value.username,
+                            password = notUiState.value.password,
                         )
                         true
+
                     } catch (e: Exception) {
                         Log.e(TAG, "Unable to send the token")
                         false
                     }
-                    _uiState.update { current -> current.copy(successSend = send) }
+                    _uiState.update { current -> current.copy(
+                        successSend = send,
+                        isLoading = false
+                    ) }
+                    _uiState.update { it.copy(
+                        isLoginAvailable = true,
+                        startScreen = AppScreen.Start,
+//                        isLoading = false
+                    ) }
+                }
+                else{
+                    Log.d(TAG,"user does not exit")
+                    _uiState.update { it.copy(
+                        isLoginAvailable = false,
+                        exist = false,
+                        successSend = false,
+                        startScreen = AppScreen.LoginPage,
+                        isLoading = false
+                    ) }
                 }
             }
         }
@@ -123,11 +179,12 @@ class Notfi(
                 try {
                     val residentsList = dataRepository.getResidents()
                     Log.d(TAG, "called the update")
+                    val sortedResidentsList = residentsList.sortedBy { it.name }
                     _uiState.update { current ->
                         current.copy(
                             residentRefreshIsLoading = false,
                             residentStatus = ResidentStatus.Success(
-                                residentsList
+                                sortedResidentsList
                             )
                         )
                     }
@@ -162,5 +219,40 @@ class Notfi(
 
     }
 
+    fun updateUsername(username:String){
+        _uiState.update { it.copy(
+            username = username
+        ) }
+    }
+
+    fun updatePassword(password:String){
+        _uiState.update { it.copy(
+            password = password
+        ) }
+    }
+
+    fun logoutUser(){
+        Log.d(TAG,"started logout")
+        _uiState.update { it.copy(
+            isLoading = true
+        ) }
+        viewModelScope.launch(){
+            try {
+                dataRepository.logoutUser(_uiState.value.token)
+                _uiState.update { it.copy(
+                    isLoading = false,
+                    startScreen = AppScreen.LoginPage,
+                    username = "",
+                    password = "",
+                ) }
+                _uiState.update { it.copy(
+                    successSend = false,
+                    isLoading = false
+                ) }
+            }catch (e:Exception){
+                Log.d(TAG,"UNABLE TO LOGOUT")
+            }
+        }
+    }
 
 }

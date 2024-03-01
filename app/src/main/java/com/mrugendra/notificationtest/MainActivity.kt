@@ -78,7 +78,12 @@ class MainActivity : ComponentActivity() {
                                 Log.d(TAG,"Refresh stared with pull")
                                 viewModel.UpdateResidentsList(true)
                             }),
-                        getResident = {viewModel.UpdateCurrentResidentAndIdentifiedId(it)}
+                        getResident = {viewModel.UpdateCurrentResidentAndIdentifiedId(it)},
+                        updateUsername = {viewModel.updateUsername(it)},
+                        updatePassword = {viewModel.updatePassword(it)},
+                        loginUser = {viewModel.updateToken()},
+                        logout = {viewModel.logoutUser()}
+
                     )
 
                 }
@@ -106,7 +111,12 @@ fun MyMainScreenPreview() {
             forceUpdateResidentList = {},
             getTheList = {},
             residentRefreshState = rememberPullRefreshState(refreshing = false, onRefresh = { /*TODO*/ }),
-            getResident = {}
+            getResident = {},
+            updateUsername = {},
+            updatePassword = {},
+            loginUser = {},
+            logout = { }
+
         )
     }
 }
@@ -122,8 +132,12 @@ fun MainSceen(
     forceUpdateResidentList:(Boolean)->Unit,
     getTheList:()->Unit,
     residentRefreshState:PullRefreshState,
-    getResident:(String)->Unit
-    ) {
+    getResident:(String)->Unit,
+    updateUsername:(String) ->Unit,
+    updatePassword:(String) ->Unit,
+    loginUser:()->Unit,
+    logout : ()->Unit
+) {
 //    Log.d("check_res_with", colorResource(id = 0x1060060).toString())
     AppMainScreen(
         nofUiState = nofUiState,
@@ -133,6 +147,10 @@ fun MainSceen(
         getTheList = getTheList,
         residentRefreshState = residentRefreshState ,
         updateResidentList = updateResidentList,
-        getResident = getResident
+        getResident = getResident,
+        updateUsername = { updateUsername(it) },
+        updatePassword = {updatePassword(it)},
+        loginUser = loginUser,
+        logout  = logout
     )
 }

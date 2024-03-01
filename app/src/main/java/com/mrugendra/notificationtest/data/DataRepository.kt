@@ -11,7 +11,11 @@ interface DataRepository {
     suspend fun getToken(): String?
     suspend fun getResidents():List<residents>
     suspend fun getAlreadyExist(token:String):Boolean
-    suspend fun updateDatabaseToken(token: String, name :String)
+    suspend fun updateDatabaseToken(token: String, username :String, password : String)
+
+    suspend fun checkCredentials(username: String,password: String):Boolean
+
+    suspend fun logoutUser(token: String)
 }
 
 class NetworkDataRepository(
@@ -38,11 +42,26 @@ class NetworkDataRepository(
 
     override suspend fun getAlreadyExist(token:String): Boolean = apiService.AlreadyExist(token = token)
 
-    override suspend fun updateDatabaseToken(token: String, name: String) {
+    override suspend fun updateDatabaseToken(token: String, username: String, password: String) {
         try {
-            apiService.updateDatabaseToken(token,name)
+            apiService.updateDatabaseToken(token, username,password)
         }
         catch(e:Exception){
+            throw e
+        }
+    }
+
+    override suspend fun checkCredentials(username: String, password: String): Boolean {
+        return try { !apiService.checkUsersReturnFalse(username, password) }
+        catch(e:Exception){
+            throw e
+        }
+    }
+
+    override suspend fun logoutUser(token: String) {
+        try{
+            apiService.signOutUser(currentToken = token)
+        }catch (e:Exception){
             throw e
         }
     }

@@ -87,14 +87,14 @@ fun PreviewPerson(){
 
 @Preview
 @Composable
-fun PreviewPeopleList(){
+fun PreviewPeopleList() {
     MyApplicationTheme {
         IdentifiedList(identified = listOf(
-            Identified("xyz","Mrugendra",LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
-            Identified("xyz","Mrugendra",LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
-            Identified("xyz","Mrugendra",LocalDateTime.of(2024, Month.JANUARY,30,22,12)),
-            Identified("xyz","Mrugendra",LocalDateTime.of(2024, Month.JANUARY,30,22,12))
-            ),{}
+            Identified("xyz", "Mrugendra", LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)),
+            Identified("xyz", "Mrugendra", LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)),
+            Identified("xyz", "Mrugendra", LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)),
+            Identified("xyz", "Mrugendra", LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12))
+        ), {}
         )
     }
 }
