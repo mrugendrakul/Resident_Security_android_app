@@ -8,7 +8,7 @@
     <string name="name_cannot_be_null">Name cannot be null</string>
     <string name="Identified">Identified</string>
     <string name="Unidentified">Unidentified</string>
-    <string name="Residents">Residents</string>
+    <string name="Residents">Residential People List</string>
     <string name="TokenRegs">TokenRegistration</string>
     <string name="back_button">back button</string>
     <string name="detailed_information">Detailed Information</string>
@@ -17,6 +17,8 @@
     <string name="login_user">Login User</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="delivery_person">Identified delivery persons</string>
+    <string name="welcome">Welcome to our application</string>
     <string name="project_title"><![CDATA[Project name :\n AI-Powered Residential Security: A Web and Android based Solution for Intruder Detection through Facial Recognition & Delivery Service Identification by OCR]]></string>
-    <!--    <string name="information" >This application is build under GD6 group</string>-->
+    <string name="information" >This application is build under GD6 group</string>
 </resources>
