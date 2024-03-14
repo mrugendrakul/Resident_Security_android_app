@@ -19,6 +19,6 @@
     <string name="password">Password</string>
     <string name="delivery_person">Identified delivery persons</string>
     <string name="welcome">Welcome to our application</string>
-    <string name="project_title"><![CDATA[Project name :\n AI-Powered Residential Security: A Web and Android based Solution for Intruder Detection through Facial Recognition & Delivery Service Identification by OCR]]></string>
+    <string name="project_title"><![CDATA[Project name :\n Residential security system]]></string>
     <string name="information" >This application is build under GD6 group</string>
 </resources>

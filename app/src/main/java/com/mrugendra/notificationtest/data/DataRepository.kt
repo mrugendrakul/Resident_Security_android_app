@@ -16,6 +16,12 @@ interface DataRepository {
     suspend fun checkCredentials(username: String,password: String):Boolean
 
     suspend fun logoutUser(token: String)
+
+    suspend fun getIdentified():List<Identified>
+
+    suspend fun getUnidentified():List<Unidentified>
+
+    suspend fun getDeliveryPeopleList():List<deliveryPerson>
 }
 
 class NetworkDataRepository(
@@ -40,7 +46,14 @@ class NetworkDataRepository(
         return residents
     }
 
-    override suspend fun getAlreadyExist(token:String): Boolean = apiService.AlreadyExist(token = token)
+    override suspend fun getAlreadyExist(token:String): Boolean {
+        return try {
+            apiService.AlreadyExist(token = token)
+        }catch (e:Exception){
+            Log.e(TAG,"backed unable to fetch in data")
+            throw e
+        }
+    }
 
     override suspend fun updateDatabaseToken(token: String, username: String, password: String) {
         try {
@@ -64,5 +77,32 @@ class NetworkDataRepository(
         }catch (e:Exception){
             throw e
         }
+    }
+
+    override suspend fun getIdentified(): List<Identified> {
+        val identified:List<Identified> = coroutineScope {
+            val residents = async { apiService.getIdentifiedList() }
+            residents.await()
+        }
+        Log.d(TAG,"Identified list is $identified")
+        return identified
+    }
+
+    override suspend fun getUnidentified(): List<Unidentified> {
+        val unidentified:List<Unidentified> = coroutineScope {
+            val residents = async { apiService.getUnidentifiedList() }
+            residents.await()
+        }
+        Log.d(TAG,"Unidentified list is $unidentified")
+        return unidentified
+    }
+
+    override suspend fun getDeliveryPeopleList(): List<deliveryPerson> {
+        val deliveryPeople:List<deliveryPerson> = coroutineScope {
+            val residents = async { apiService.getDeliveryPeopleList() }
+            residents.await()
+        }
+        Log.d(TAG,"Delivery list is $deliveryPeople")
+        return deliveryPeople
     }
 }

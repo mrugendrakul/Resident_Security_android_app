@@ -14,13 +14,19 @@ class DefaultAppContainer : AppContainer{
     private val tokenCollection = db.collection("residents")
     private val residentCollection = db.collection("KnownPeople")
     private val userLoginCollection = db.collection("userLogin")
-
+    private val identifiedCollection = db.collection("IdentifiedPeople")
+    private val unidentifiedCollection = db.collection("UnkownCollection")
+    private val deliveryCollection = db.collection("DeliveryPeople")
 //    override val apiService:FirebaseAPI = NetworkFirebaseAPI(db, residentCollection)
     override val apiService:FirebaseAPI = NetworkFirebaseAPI(
     db,
     tokenCollection = tokenCollection,
     residentCollection = residentCollection,
-    userLoginCollection = userLoginCollection)
+    userLoginCollection = userLoginCollection,
+    identifiedCollection = identifiedCollection,
+    unidentifiedCollection= unidentifiedCollection,
+    deliveryCollection = deliveryCollection
+)
 
     override val dataRepository: DataRepository = NetworkDataRepository(apiService)
 }

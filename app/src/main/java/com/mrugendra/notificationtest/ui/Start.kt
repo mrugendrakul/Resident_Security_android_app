@@ -1,38 +1,31 @@
 package com.mrugendra.notificationtest.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,18 +33,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.isGranted
 import com.mrugendra.notificationtest.R
 import com.mrugendra.notificationtest.data.uiState
 import com.mrugendra.notificationtest.ui.theme.MyApplicationTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun StartHere(
     nofUiState: uiState,
     navigateToIdentified:()->Unit,
     navigateToUnidentified:()->Unit,
     navigateToResidents:()->Unit,
-    navigateToToken:()->Unit){
+    navigateToToken:()->Unit,
+    permissionState:PermissionState?){
+
 
     Scaffold(
 //        topBar = {
@@ -60,10 +59,13 @@ fun StartHere(
 //            )
 //        }
     ){
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
+//                .padding(top = 100.dp)
+                .verticalScroll(rememberScrollState())
 //                .weight(1f)
 
                 .background(color = MaterialTheme.colorScheme.background)
@@ -72,9 +74,12 @@ fun StartHere(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
+//            Spacer(modifier = Modifier
+////                .fillMaxHeight(0.3f)
+//                .padding(top = 100.dp)
+//            )
             Text(
-                text = "Welcome to our application",
+                text = stringResource(R.string.welcome),
                 fontSize = 30.sp,
                 textAlign = TextAlign.Center,
                 lineHeight = 30.sp,
@@ -98,6 +103,41 @@ fun StartHere(
                         .padding(16.dp)
                 )
             }
+            LaunchedEffect(key1 = Unit) {
+                permissionState?.launchPermissionRequest()
+            }
+            if(permissionState?.status?.isGranted == true){
+//                Text(text = "Notification permission granted")
+            }
+            else{
+                Card(
+                    modifier = Modifier
+                        .padding(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    )
+                ) {
+                    Text(
+                        modifier  = Modifier
+                            .padding(10.dp)
+                        ,
+                        text = "Notification permission missing, grant them from setting",
+                        fontSize = 20.sp,
+                        lineHeight = 20.sp,
+                        textAlign = TextAlign.Center
+                    )
+
+                }
+            }
+
+
+            Image(
+                modifier = Modifier
+                    .size(300.dp),
+
+                painter = painterResource(R.drawable.main_page),
+                contentDescription ="Project Intro" )
+
 //            Row {
 //                SpcButton(
 //                    text = "Identified",
@@ -130,7 +170,7 @@ fun StartHere(
 //        Spacer(modifier = Modifier.weight(1f))
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun SpcButton(
     text:String,
@@ -167,13 +207,19 @@ fun SpcButton(
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Preview
 @Composable
 fun PreviewStartHere(){
+
     MyApplicationTheme(
         dynamicColor = false
     )
-    { StartHere(nofUiState = uiState(),{},{},{},{}) }
+    { StartHere(nofUiState = uiState(),{},{},{},{},
+         permissionState = null
+    )
+    }
 }
 
 @Preview

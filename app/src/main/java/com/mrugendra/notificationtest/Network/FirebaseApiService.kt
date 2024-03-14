@@ -2,10 +2,14 @@ package com.mrugendra.notificationtest.Network
 
 import android.util.Log
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
 import com.google.firebase.messaging.FirebaseMessaging
+import com.mrugendra.notificationtest.data.Identified
+import com.mrugendra.notificationtest.data.Unidentified
+import com.mrugendra.notificationtest.data.deliveryPerson
 import com.mrugendra.notificationtest.data.residents
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -22,6 +26,12 @@ interface FirebaseAPI{
     suspend fun signOutUser(currentToken : String)
 
     suspend fun checkUsersReturnFalse(username: String, password: String):Boolean
+
+    suspend fun getIdentifiedList():List<Identified>
+
+    suspend fun getUnidentifiedList():List<Unidentified>
+
+    suspend fun getDeliveryPeopleList():List<deliveryPerson>
 }
 
 val TAG = "MyFirebaseMessagingService"
@@ -30,7 +40,10 @@ class NetworkFirebaseAPI(
     val db : FirebaseFirestore,
     val tokenCollection : CollectionReference,
     val residentCollection : CollectionReference,
-    val userLoginCollection :CollectionReference
+    val userLoginCollection :CollectionReference,
+    val identifiedCollection: CollectionReference,
+    val unidentifiedCollection:CollectionReference,
+    val deliveryCollection:CollectionReference
 ):FirebaseAPI{
 
     override suspend fun getFCMToken():String {
@@ -64,7 +77,8 @@ class NetworkFirebaseAPI(
             result.isEmpty
         }catch (e:Exception){
             Log.e(TAG,"Backend: unable to fetch")
-            false
+            throw e
+//            false
         }
     }
 
@@ -145,4 +159,80 @@ class NetworkFirebaseAPI(
         }
     }
 
+
+    override suspend fun getIdentifiedList(): List<Identified> {
+        val IdentifiedList = mutableListOf<Identified>()
+        Log.d(TAG,"identified fetching from api")
+        try{
+            val querySnapshop  = identifiedCollection
+                .get()
+                .await()
+            for (document in querySnapshop.documents){
+                val name = document.getString("name")?:""
+                val id = document.getString("id")?:""
+                val time = document.getTimestamp("timeStamp")?: Timestamp.now()
+
+                val identf = Identified(id,name,time)
+                Log.d(TAG,"Resident with id : ${identf.id} got")
+                IdentifiedList.add(identf)
+            }
+        }
+        catch( e:Exception ){
+            Log.d(TAG,"Failed to get the idenfied data")
+            throw e
+        }
+        Log.d(TAG,"identified is empyt : ${IdentifiedList.isEmpty()}")
+        return if(IdentifiedList.isNotEmpty()) IdentifiedList
+        else throw Exception()
+    }
+
+    override suspend fun getUnidentifiedList(): List<Unidentified> {
+        val UnidentifiedList = mutableListOf<Unidentified>()
+        Log.d(TAG,"Unidentified fetching from api")
+        try{
+            val querySnapshot  = unidentifiedCollection
+                .get()
+                .await()
+            for (document in querySnapshot.documents){
+                val image = document.getString("imageLink")?:""
+                val time = document.getTimestamp("timeStamp")?: Timestamp.now()
+
+                val unidentf = Unidentified(image,time)
+                Log.d(TAG,"Fetched the Unidentified")
+                UnidentifiedList.add(unidentf)
+            }
+        }
+        catch( e:Exception ){
+            Log.d(TAG,"Failed to get the data")
+            throw e
+        }
+        Log.d(TAG,"Unidentified is empyt : ${UnidentifiedList.isEmpty()}")
+        return if(UnidentifiedList.isNotEmpty()) UnidentifiedList
+        else throw Exception()
+    }
+
+    override suspend fun getDeliveryPeopleList(): List<deliveryPerson> {
+        val deliverPersonList = mutableListOf<deliveryPerson>()
+        Log.d(TAG,"Delivery fetching from api")
+        try{
+            val querySnapshot  = deliveryCollection
+                .get()
+                .await()
+            for (document in querySnapshot.documents){
+                val image = document.getString("imageLink")?:""
+                val time = document.getTimestamp("timeStamp")?: Timestamp.now()
+
+                val unidentf = deliveryPerson(image,time)
+                Log.d(TAG,"Fetched the Delivery")
+                deliverPersonList.add(unidentf)
+            }
+        }
+        catch( e:Exception ){
+            Log.d(TAG,"Failed to get the data")
+            throw e
+        }
+        Log.d(TAG,"Delivery is empyt : ${deliverPersonList.isEmpty()}")
+        return if(deliverPersonList.isNotEmpty()) deliverPersonList
+        else throw Exception()
+    }
 }

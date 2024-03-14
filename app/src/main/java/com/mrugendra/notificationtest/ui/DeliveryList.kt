@@ -56,7 +56,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.google.firebase.Timestamp
 import com.mrugendra.notificationtest.R
-import com.mrugendra.notificationtest.data.Unidentified
+import com.mrugendra.notificationtest.data.deliveryPerson
 import com.mrugendra.notificationtest.data.uiState
 import com.mrugendra.notificationtest.ui.theme.MyApplicationTheme
 import java.text.SimpleDateFormat
@@ -64,20 +64,20 @@ import java.util.Date
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun UnidentifiedListSuccess(
+fun DeliveryListSuccess(
     nofUiState:uiState,
     refreshState: PullRefreshState,
     openCalender: () -> Unit,
     search: () -> Unit,
 
-){
+    ){
     Scaffold(
         topBar ={
-            UnidentifiedSearchBar(
+            DeliverySearchBar(
                 nofUiState = nofUiState,
                 openCalender = openCalender,
                 search = search
-                )
+            )
         }
     ){
         Box (
@@ -92,19 +92,19 @@ fun UnidentifiedListSuccess(
                     .background(color = MaterialTheme.colorScheme.background)
                     .pullRefresh(refreshState)
             ) {
-                items(nofUiState.unidentifiedList) { unknown ->
-                    Unknown(unknown)
+                items(nofUiState.deliverPersonList) { deliveryPerson ->
+                    DeliveryPerson(deliveryPerson)
                 }
             }
             if(nofUiState.openCalender)(
-                    UniDatePickup(
+                    DelDatePickup(
                         nofUiState,
                         openCalender,
                         search
                     )
                     )
             PullRefreshIndicator(
-                refreshing = nofUiState.unidentifiedRefresh,
+                refreshing = nofUiState.deliveryRefresh,
                 state = refreshState,
                 modifier = Modifier.align(Alignment.TopCenter),
                 backgroundColor = MaterialTheme.colorScheme.inverseOnSurface,
@@ -116,7 +116,7 @@ fun UnidentifiedListSuccess(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UniDatePickup(
+fun DelDatePickup(
     nofUiState: uiState,
     openCalender: () -> Unit,
     search: () -> Unit,
@@ -145,7 +145,7 @@ fun UniDatePickup(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UnidentifiedSearchBar(
+fun DeliverySearchBar(
     nofUiState: uiState,
     openCalender:()->Unit,
     search:()->Unit,
@@ -228,31 +228,31 @@ fun UnidentifiedSearchBar(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun UnidentifiedList(
+fun DeliveryList(
     nofUiState:uiState,
     openCalender: () -> Unit,
     search:()->Unit,
     refreshState: PullRefreshState,
     errorRefresh:(Boolean)->Unit
 ){
-    val unidentifiedStatus = nofUiState.unidentifiedStatus
-    when(unidentifiedStatus){
-        is UnidentifiedStatus.Success->{
-            UnidentifiedListSuccess(
+    val deliveryStatus = nofUiState.deliveryStatus
+    when(deliveryStatus){
+        is DeliveryIdentifyStatus.Success->{
+            DeliveryListSuccess(
                 nofUiState = nofUiState,
                 refreshState = refreshState,
                 search = search,
                 openCalender =  openCalender)
         }
 
-        UnidentifiedStatus.Loading -> {
-            UnidentifiedListLoading(
+        DeliveryIdentifyStatus.Loading -> {
+            DeliveryListLoading(
                 nofUiState = nofUiState,
                 refreshState = refreshState
             )
         }
-        UnidentifiedStatus.Error -> {
-            UnidentifiedListError(
+        DeliveryIdentifyStatus.Error -> {
+            DeliveryListError(
                 modifier = Modifier
                     .fillMaxSize(),
                 getTheList = { errorRefresh(false) }
@@ -262,7 +262,7 @@ fun UnidentifiedList(
 }
 
 @Composable
-fun UnidentifiedListError(
+fun DeliveryListError(
     modifier: Modifier = Modifier,
     getTheList: () -> Unit
 ) {
@@ -290,7 +290,7 @@ fun UnidentifiedListError(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun UnidentifiedListLoading(
+fun DeliveryListLoading(
     nofUiState: uiState,
     refreshState: PullRefreshState
 ){
@@ -307,7 +307,7 @@ fun UnidentifiedListLoading(
             }
         }
         PullRefreshIndicator(
-            refreshing = nofUiState.unidentifiedRefresh,
+            refreshing = nofUiState.deliveryRefresh,
             state = refreshState,
             modifier = Modifier.align(Alignment.TopCenter),
             backgroundColor = MaterialTheme.colorScheme.inverseOnSurface,
@@ -318,7 +318,7 @@ fun UnidentifiedListLoading(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun UnknownLoading(
+fun DeliveryLoading(
 
 ){
     Card(
@@ -362,11 +362,11 @@ fun UnknownLoading(
 }
 
 @Composable
-fun Unknown(
-    unknown:Unidentified,
+fun DeliveryPerson(
+    delivery:deliveryPerson,
 ){
     val sdf = SimpleDateFormat("hh:mm a YYYY/MM/dd")
-    val fdate = sdf.format(unknown.time.toDate())
+    val fdate = sdf.format(delivery.timeStamp.toDate())
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -381,7 +381,7 @@ fun Unknown(
         ){
             AsyncImage(
                 model = ImageRequest.Builder(context= LocalContext.current)
-                    .data(unknown.image)
+                    .data(delivery.image)
                     .memoryCachePolicy(CachePolicy.DISABLED)
                     .build(),
                 contentDescription = "Unkown person",
@@ -403,24 +403,24 @@ fun Unknown(
 
 @Preview
 @Composable
-fun PreviewUnkown(){
-    Unknown(Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time= Timestamp.now()),
-        )
+fun PreviewDelivery(){
+    DeliveryPerson(deliveryPerson(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",timeStamp= Timestamp.now()),
+    )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Preview(showSystemUi = true)
 @Composable
-fun PreviewUnidentifiedListSuccess(){
+fun PreviewDeliveryListSuccess(){
     MyApplicationTheme(
         dynamicColor = false
     ) {
-        UnidentifiedListSuccess(nofUiState = uiState(
-            unidentifiedList = listOf(
-                Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time=Timestamp.now()),
-                Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time=Timestamp.now()),
-                Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time=Timestamp.now()),
-                Unidentified(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",time=Timestamp.now())
+        DeliveryListSuccess(nofUiState = uiState(
+            deliverPersonList = listOf(
+                deliveryPerson(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",timeStamp=Timestamp.now()),
+                deliveryPerson(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",timeStamp=Timestamp.now()),
+                deliveryPerson(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",timeStamp=Timestamp.now()),
+                deliveryPerson(image ="https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",timeStamp=Timestamp.now())
             ),
             openCalender = false
         ),
@@ -437,11 +437,11 @@ fun PreviewUnidentifiedListSuccess(){
     showSystemUi = true
 )
 @Composable
-fun PreviewUnidentifiedLoading(){
+fun PreviewDeliveryLoading(){
     MyApplicationTheme(
         dynamicColor = false
     ) {
-        UnidentifiedListLoading(
+        DeliveryListLoading(
             nofUiState = uiState(),
             refreshState = rememberPullRefreshState(refreshing = false, onRefresh = { /*TODO*/ }),
         )

@@ -18,14 +18,14 @@ class MyApplication: Application() {
         catch (e:Exception){
             Log.d("MyFirebaseMessagingService","Error in initialinzing")
         }
-        if(BuildConfig.DEBUG){
-            val firestore = Firebase.firestore
-            firestore.useEmulator("10.0.2.2", 8080)
-
-            firestore.firestoreSettings = firestoreSettings {
-                isPersistenceEnabled = false
-            }
-        }
+//        if(BuildConfig.DEBUG){
+//            val firestore = Firebase.firestore
+//            firestore.useEmulator("10.0.2.2", 8080)
+//
+//            firestore.firestoreSettings = firestoreSettings {
+//                isPersistenceEnabled = false
+//            }
+//        }
 
         container = DefaultAppContainer()
     }

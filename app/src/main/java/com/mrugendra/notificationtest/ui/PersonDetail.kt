@@ -70,6 +70,7 @@ fun PersonDetail(
             ,
             text = residents.name,
             fontSize = 35.sp,
+            lineHeight = 36.sp,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(10.dp))
@@ -79,20 +80,21 @@ fun PersonDetail(
             ,
             text = residents.info,
             fontSize = 20.sp,
+            lineHeight = 22.sp,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(20.dp))
     }
 }
 
-@Preview(device = "spec:orientation=landscape,width=411dp,height=891dp")
+@Preview(device = "spec:width=411dp,height=891dp")
 @Composable
 fun PreviewPersonDetail(){
     MyApplicationTheme(
         dynamicColor = false
     ) {
             PersonDetail(
-                residents("Mrugendra","uudirando","Student in pccoe and created this application",
+                residents("Mrugendra Kulkarni Computer","uudirando","Student in pccoe and created this application",
                     "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=740&t=st=1708193220~exp=1708193820~hmac=b17f7cebf9d68d37476c4db78b0631d9be333b664205ddaa5973dced193bf48e")
             )
         }

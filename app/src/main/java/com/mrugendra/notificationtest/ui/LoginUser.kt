@@ -1,11 +1,11 @@
 package com.mrugendra.notificationtest.ui
 
-import android.graphics.Outline
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -70,7 +70,8 @@ fun LoginUser(
                         imageVector = Icons.Default.Person,
                         tint = MaterialTheme.colorScheme.onBackground,
                         contentDescription = "")
-                }
+                },
+                singleLine = true
             )
 
             OutlinedTextField(
@@ -78,7 +79,11 @@ fun LoginUser(
                 value = nofUiState.password ,
                 onValueChange ={updatePassword(it)},
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Password
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { loginUser() }
                 ),
                 visualTransformation = if(!passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
                 trailingIcon = {
@@ -92,7 +97,8 @@ fun LoginUser(
                             contentDescription = "Show password"
                         )
                     }
-                }
+                },
+                singleLine = true
             )
 
             Spacer(modifier = Modifier

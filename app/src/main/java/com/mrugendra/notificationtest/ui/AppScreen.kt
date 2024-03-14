@@ -1,7 +1,10 @@
 package com.mrugendra.notificationtest.ui
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -12,8 +15,8 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenuItem
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -23,7 +26,9 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,15 +58,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.rememberPermissionState
 import com.mrugendra.notificationtest.R
-import com.mrugendra.notificationtest.data.Identified
-import com.mrugendra.notificationtest.data.Unidentified
 import com.mrugendra.notificationtest.data.uiState
 import com.mrugendra.notificationtest.ui.theme.MyApplicationTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import java.time.Month
 
 enum class AppScreen(@StringRes val title: Int) {
     Start(title = R.string.app_name),
@@ -71,11 +75,13 @@ enum class AppScreen(@StringRes val title: Int) {
     TokenRegistration(title = R.string.TokenRegs),
     PersonDetail(title = R.string.detailed_information),
     LoginPage(title = R.string.login_user),
-    Loading(title = R.string.loading)
+    Loading(title = R.string.loading),
+    DeliveryPersons(title = R.string.delivery_person)
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @SuppressLint("ResourceType")
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
 @Composable
 fun AppMainScreen(
     nofUiState: uiState,
@@ -90,7 +96,21 @@ fun AppMainScreen(
     updateUsername: (String) -> Unit,
     updatePassword: (String) ->Unit,
     loginUser:()->Unit,
-    logout : ()->Unit
+    logout : ()->Unit,
+    retry:()->Unit,
+    openCalender:()->Unit,
+    searchIdentified:()->Unit,
+    searchResidents:()->Unit,
+    onSearchText:(String)->Unit,
+    updateIdentifiedList:(Boolean)->Unit,
+    identifiedRefreshState :PullRefreshState,
+    permissionState: PermissionState,
+    unidentifiedRefreshState : PullRefreshState,
+    updateUnidentifiedList :(Boolean)->Unit,
+    searchUnidentified:()->Unit,
+    delRefreshState:PullRefreshState,
+    updateDeliveryPeopelList:(Boolean)->Unit,
+    searchDeliveryPerson :()->Unit
 ) {
 //    Log.d("check_res_with", colorResource(id = 0x1060060).toString())
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -116,7 +136,7 @@ fun AppMainScreen(
         drawerState = drawerState,
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background),
-        gesturesEnabled = if(currentScreen == AppScreen.Loading || currentScreen == AppScreen.LoginPage){false}else{true}
+        gesturesEnabled = !(currentScreen == AppScreen.Loading || currentScreen == AppScreen.LoginPage)
     ){
         Scaffold(
             topBar = {
@@ -140,7 +160,8 @@ fun AppMainScreen(
                     route = AppScreen.Loading.name
                 ){
                     LoadingScreen(
-                        nofUiState = nofUiState
+                        nofUiState = nofUiState,
+                        retry =retry
                     )
                 }
 
@@ -165,7 +186,8 @@ fun AppMainScreen(
                         },
                         navigateToToken = {
 //                        navController.navigate(AppScreen.TokenRegistration.name)
-                        }
+                        },
+                        permissionState = permissionState
                     )
                 }
                 composable(
@@ -173,76 +195,53 @@ fun AppMainScreen(
                     enterTransition = { slideInTransition },
                     exitTransition = { slideOutTransition }
                 ) {
+                    updateIdentifiedList(false)
+                    updateResidentList()
                     IdentifiedList(
-                        listOf(
-                            Identified(
-                                "xyz",
-                                "Mrugendra",
-                                LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                            ),
-                            Identified(
-                                "xyz",
-                                "Mrugendra",
-                                LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                            ),
-                            Identified(
-                                "xyz",
-                                "Mrugendra",
-                                LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                            ),
-                            Identified(
-                                "xyz",
-                                "Mrugendra",
-                                LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                            )
-                        ),
+                        nofUiState = nofUiState,
+                        identified = nofUiState.identifiedStatus,
                         button = {
                             Log.d(
                                 com.mrugendra.notificationtest.TAG,
                                 "Identified navigate to person"
                             )
+                            getResident(it)
                             navController.navigate(AppScreen.PersonDetail.name)
                         },
-                        buttonEnabled = true
+                        buttonEnabled = true,
+                        openCalender = openCalender,
+                        search = searchIdentified,
+                        onSearchText = { onSearchText(it) },
+                        refreshState = identifiedRefreshState,
+                        errorRefresh = { updateIdentifiedList(it) }
                     )
                 }
                 composable(AppScreen.Unidentified.name) {
-                    UnidentifiedList(unidentifes = listOf(
-                        Unidentified(
-                            image = "https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",
-                            time = LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                        ),
-                        Unidentified(
-                            image = "https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",
-                            time = LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                        ),
-                        Unidentified(
-                            image = "https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",
-                            time = LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                        ),
-                        Unidentified(
-                            image = "https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=N14PaYcMX9dfjIQx-gOrJcAUGyYRZ0Ohkbj5lH-GkQs=",
-                            time = LocalDateTime.of(2024, Month.JANUARY, 30, 22, 12)
-                        )
-                    ), {
-                        Log.d(
-                            com.mrugendra.notificationtest.TAG,
-                            "Unidentified navigate to person"
-                        )
-                        navController.navigate(AppScreen.PersonDetail.name)
-                    })
+                    updateUnidentifiedList(false)
+                    UnidentifiedList(
+                        nofUiState = nofUiState,
+                        openCalender = openCalender,
+                        search = searchUnidentified,
+                        refreshState = unidentifiedRefreshState,
+                        errorRefresh = {updateUnidentifiedList(it)}
+                    )
                 }
                 composable(AppScreen.Residents.name) {
+                    Log.d(TAG,"Residents status : ${nofUiState.residentStatus}")
+                    updateResidentList()
                     ResidentList(
                         nofUiState = nofUiState,
                         residents = nofUiState.residentStatus,
-                        getTheList = getTheList,
                         pressed = {
                             getResident(it)
                             navController.navigate(AppScreen.PersonDetail.name)
                         },
+                        getTheList = getTheList,
                         refreshState = residentRefreshState,
-                        refreshButton = { forceUpdateResidentList(true) }
+                        refreshButton = { forceUpdateResidentList(true) },
+                        openCalender = openCalender,
+                        search = searchResidents,
+                        onSearchText = { onSearchText(it) }
                     )
                 }
                 composable(AppScreen.TokenRegistration.name) {
@@ -284,6 +283,19 @@ fun AppMainScreen(
 
                 }
 
+                composable (
+                    route = AppScreen.DeliveryPersons.name
+                ){
+                    updateDeliveryPeopelList(false)
+                    DeliveryList(
+                        nofUiState = nofUiState,
+                        openCalender = openCalender,
+                        search = searchDeliveryPerson,
+                        refreshState = delRefreshState,
+                        errorRefresh = {updateDeliveryPeopelList(false)}
+                    )
+                }
+
             }
 
         }
@@ -298,80 +310,70 @@ fun DrawerContent(
     drawerState: DrawerState,
     scope: CoroutineScope
 ) {
-    ModalDrawerSheet() {
+    ModalDrawerSheet(
+        modifier = Modifier
+            .width(300.dp),
+        drawerShape = RoundedCornerShape(0.dp)
+
+
+    ) {
         Text(
-            text = "Navigate to your fav Location",
+            text = "Alert System",
             fontSize = 25.sp,
             modifier = Modifier.padding(16.dp),
             textAlign = TextAlign.Center
         )
-        Divider()
+        HorizontalDivider(
+            modifier = Modifier
+                .padding(vertical = 10.dp)
+        )
+
+        val optionsForUser = listOf(AppScreen.Identified,AppScreen.Unidentified,AppScreen.Residents,AppScreen.DeliveryPersons)
         NavigationDrawerItem(
             label = { Text(text = stringResource(AppScreen.Start.title))},
             selected = currentScreen == AppScreen.Start,
             onClick = {
                 if(currentScreen!=AppScreen.Start){
-                    navController.navigate(AppScreen.Start.name) {
-                        popUpTo(AppScreen.Start.name)
-                    }
+                    navController.popBackStack(AppScreen.Start.name,inclusive = false)
             }
                 scope.launch {
                     drawerState.close()
                 }
             },
-
+            shape = RoundedCornerShape(0.dp,25.dp,25.dp,0.dp),
+            modifier =  Modifier
+                .padding(end = 10.dp)
             )
-        NavigationDrawerItem(
-            label = { Text(text = stringResource(AppScreen.Identified.title))},
-            selected = currentScreen == AppScreen.Identified,
-            onClick = {
-                if(currentScreen != AppScreen.Identified){
-                    navController.navigate(AppScreen.Identified.name) {
-                        popUpTo(AppScreen.Start.name)
+        optionsForUser.map {
+            NavigationDrawerItem(
+                label = { Text(text = stringResource(it.title))},
+                selected = currentScreen == it,
+                onClick = {
+                    if(currentScreen != it){
+                        navController.navigate(it.name) {
+                            popUpTo(AppScreen.Start.name)
+                        }
                     }
-            }
-                scope.launch {
-                    drawerState.close()
-                }
-            })
-        NavigationDrawerItem(
-            label = { Text(text = stringResource(AppScreen.Unidentified.title))},
-            selected = currentScreen == AppScreen.Unidentified,
-            onClick = {
-                if(currentScreen != AppScreen.Unidentified ){
-                    navController.navigate(AppScreen.Unidentified.name) {
-                        popUpTo(AppScreen.Start.name)
+                    scope.launch {
+                        drawerState.close()
                     }
-            }
-                scope.launch {
-                    drawerState.close()
-                }
-            })
-        NavigationDrawerItem(
-            label = { Text(text = stringResource(AppScreen.Residents.title))},
-            selected = currentScreen == AppScreen.Residents,
-            onClick = {
-                if(currentScreen != AppScreen.Residents){
-                    forceUpdateResidentList(false)
-                    navController.navigate(AppScreen.Residents.name) {
-                        popUpTo(AppScreen.Start.name)
-                    }
-            }
-                scope.launch {
-                    drawerState.close()
-                }
-            })
+                },
+                shape = RoundedCornerShape(0.dp,25.dp,25.dp,0.dp),
+                modifier =  Modifier
+                    .padding(end = 10.dp)
+            )
+         }
     }
 
 }
 
-@Preview
+@Preview(device = "spec:parent=pixel_5")
 @Composable
 fun PreviewDrawerContent(){
     MyApplicationTheme(
         dynamicColor =false
     ){
-        DrawerContent(currentScreen = AppScreen.Start,
+        DrawerContent(currentScreen = AppScreen.Residents,
             navController = NavHostController(context = LocalContext.current),
             forceUpdateResidentList = {},
             scope = rememberCoroutineScope(),
@@ -383,10 +385,10 @@ fun PreviewDrawerContent(){
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IntruderAppBar(
+    modifier: Modifier = Modifier,
     currentScreen: AppScreen,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit = {},
-    modifier: Modifier = Modifier,
     logout : ()->Unit,
     drawerState: DrawerState,
     scope: CoroutineScope
@@ -412,17 +414,24 @@ fun IntruderAppBar(
 //                    )
 //                }
 //            }
-             IconButton(onClick = { scope.launch(){
-                 drawerState.apply {
-                     if (isClosed) open() else close()
-                 }
-             }}) {
-                 Icon(
-                     imageVector = Icons.Default.Menu,
-                     tint = MaterialTheme.colorScheme.onPrimary,
-                     contentDescription = "")
 
-             }
+            val showDrawer = !(currentScreen == AppScreen.Loading || currentScreen == AppScreen.LoginPage)
+            if(showDrawer){
+                IconButton(onClick = {
+                    scope.launch() {
+                        drawerState.apply {
+                            if (isClosed) open() else close()
+                        }
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        contentDescription = ""
+                    )
+
+                }
+            }
 
         },
         actions = {
@@ -437,16 +446,18 @@ fun IntruderAppBar(
                     expanded = expanded,
                     onDismissRequest = { expanded = false}) {
                     DropdownMenuItem(
-                        onClick = { logout() }) {
-                        Text(text = "Logout")
-                    }
+                        text = {
+                            Text(text = "Logout")
+                        },
+                        onClick = { logout() })
                 }
             }
         }
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
 @Preview
 @Composable
 fun PreviewAppScreen(){
@@ -462,12 +473,26 @@ fun PreviewAppScreen(){
             getTheList = { /*TODO*/ },
             residentRefreshState = rememberPullRefreshState(
                 refreshing = false,
-                onRefresh = { /*TODO*/ }) ,
+                onRefresh = { /*TODO*/ }),
             getResident = {},
             updateUsername = {},
             updatePassword = {},
             loginUser={},
-            logout = {}
+            logout = {},
+            retry = {},
+            openCalender= {},
+            searchIdentified = {},
+            searchResidents = {},
+            onSearchText = {},
+            updateIdentifiedList = {},
+            identifiedRefreshState =  rememberPullRefreshState(refreshing = false, onRefresh = { /*TODO*/ }),
+            permissionState = rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS),
+            unidentifiedRefreshState = rememberPullRefreshState(refreshing = false, onRefresh = { /*TODO*/ }),
+            updateUnidentifiedList = {},
+            searchUnidentified = {},
+            delRefreshState = rememberPullRefreshState(refreshing = false, onRefresh = { /*TODO*/ }),
+            updateDeliveryPeopelList={},
+            searchDeliveryPerson= {}
         )
     }
 }
