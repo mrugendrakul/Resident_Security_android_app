@@ -456,47 +456,6 @@ fun IntruderAppBar(
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
-@Preview
-@Composable
-fun PreviewAppScreen(){
-    MyApplicationTheme(
-        dynamicColor = false
-    ) {
-        AppMainScreen(
-            nofUiState = uiState(),
-            updateName = {},
-            updateToken = { /*TODO*/ },
-            updateResidentList = { /*TODO*/ },
-            forceUpdateResidentList = {},
-            getTheList = { /*TODO*/ },
-            residentRefreshState = rememberPullRefreshState(
-                refreshing = false,
-                onRefresh = { /*TODO*/ }),
-            getResident = {},
-            updateUsername = {},
-            updatePassword = {},
-            loginUser={},
-            logout = {},
-            retry = {},
-            openCalender= {},
-            searchIdentified = {},
-            searchResidents = {},
-            onSearchText = {},
-            updateIdentifiedList = {},
-            identifiedRefreshState =  rememberPullRefreshState(refreshing = false, onRefresh = { /*TODO*/ }),
-            permissionState = rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS),
-            unidentifiedRefreshState = rememberPullRefreshState(refreshing = false, onRefresh = { /*TODO*/ }),
-            updateUnidentifiedList = {},
-            searchUnidentified = {},
-            delRefreshState = rememberPullRefreshState(refreshing = false, onRefresh = { /*TODO*/ }),
-            updateDeliveryPeopelList={},
-            searchDeliveryPerson= {}
-        )
-    }
-}
-
 
 
 

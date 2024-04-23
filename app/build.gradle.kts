@@ -8,7 +8,7 @@ plugins {
 android {
     signingConfigs {
         create("release") {
-            storeFile = file("C:\\Users\\Mruge\\keystores\\user-keystore.jks")
+            storeFile = file("/home/mrugendra/Documents/keystores/user-keystore.jks")
             storePassword = "goldy777"
             keyAlias = "Upload"
             keyPassword = "goldy777"
